@@ -136,3 +136,104 @@ for key, product in found.items():
 save_sent(sent)
 
 print(f"تم فحص المنتجات. العروض الجديدة: {len(found)}")
+
+# =========================
+# NOON EGYPT
+# =========================
+
+def search_noon():
+    url = "https://www.noon.com/egypt-en/"
+
+    headers = {
+        "x-api-key": HASDATA_API_KEY,
+        "Content-Type": "application/json"
+    }
+
+    payload = {
+        "url": url,
+        "proxyType": "datacenter",
+        "proxyCountry": "EG",
+        "jsRendering": True,
+        "outputFormat": ["json"],
+        "aiExtractRules": {
+            "products": {
+                "type": "list",
+                "description": "Extract products from this Noon Egypt page. For each product, extract the product title, current price, original price before discount, displayed discount percentage, and product URL.",
+                "output": {
+                    "title": {
+                        "type": "string",
+                        "description": "Full product title"
+                    },
+                    "currentPrice": {
+                        "type": "number",
+                        "description": "Current selling price"
+                    },
+                    "originalPrice": {
+                        "type": "number",
+                        "description": "Original price before discount"
+                    },
+                    "discountPercent": {
+                        "type": "number",
+                        "description": "Displayed discount percentage"
+                    },
+                    "url": {
+                        "type": "string",
+                        "description": "Product URL"
+                    }
+                }
+            }
+        }
+    }
+
+    response = requests.post(
+        "https://api.hasdata.com/scrape/web",
+        json=payload,
+        headers=headers,
+        timeout=180
+    )
+
+    response.raise_for_status()
+
+    data = response.json()
+    return data.get("aiResponse", {}).get("products", [])
+
+
+noon_products = search_noon()
+
+for product in noon_products:
+
+    current = product.get("currentPrice")
+    original = product.get("originalPrice")
+
+    if current is None or original is None or original <= 0:
+        continue
+
+    discount = round((original - current) / original * 100)
+
+    if discount < 50:
+        continue
+
+    product["discountPercent"] = discount
+
+    message = f"""🔥🔥 عرض قوي على Noon مصر
+
+🛍️ {product.get('title', 'منتج')}
+
+📉 الخصم: {discount}%
+🏷️ السعر قبل: {original} جنيه
+💰 السعر الآن: {current} جنيه
+
+🔗 {product.get('url', '')}"""
+
+    telegram_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+
+    requests.post(
+        telegram_url,
+        data={
+            "chat_id": CHAT_ID,
+            "text": message
+        },
+        timeout=30
+    )
+
+print(f"تم فحص Noon. المنتجات المستخرجة: {len(noon_products)}")
