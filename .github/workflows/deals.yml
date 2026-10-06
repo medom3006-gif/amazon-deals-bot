@@ -1,1 +1,40 @@
+name: Amazon Deals Bot
 
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "*/10 * * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  run-bot:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: تحميل الملفات
+        uses: actions/checkout@v4
+
+      - name: تشغيل Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: تثبيت المكتبات
+        run: pip install requests
+
+      - name: تشغيل البوت
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          HASDATA_API_KEY: ${{ secrets.HASDATA_API_KEY }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+        run: python bot.py
+
+      - name: حفظ سجل العروض
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add sent_deals.json
+          git diff --cached --quiet || git commit -m "Update sent deals"
+          git push
