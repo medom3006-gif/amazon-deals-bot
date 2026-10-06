@@ -49,7 +49,7 @@ def search_amazon(term):
         timeout=120
     )
 
-    response.raise_for_status()
+    print(response.text)
 
     return response.json().get("productResults", [])
 
