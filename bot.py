@@ -8,7 +8,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 HASDATA_API_KEY = os.environ["HASDATA_API_KEY"]
 CHAT_ID = os.environ["CHAT_ID"]
 
-SEARCH_TERMS = ["50% off"]
+SEARCH_TERMS = ["50% off", "60% off", "70% off", "80% off", "90% off"]
 SENT_FILE = Path("sent_deals.json")
 
 
