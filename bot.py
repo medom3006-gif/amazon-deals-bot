@@ -152,6 +152,7 @@ def search_noon():
     payload = {
         "url": url,
         "proxyCountry": "US",
+        "proxyType": "datacenter",
         "jsRendering": True,
         "outputFormat": ["markdown", "json"],
         "aiExtractRules": {
