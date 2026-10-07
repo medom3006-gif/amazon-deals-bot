@@ -193,7 +193,7 @@ def search_noon():
     )
 
     print(response.status_code)
-print(response.text)
+    print(response.text)
 
     data = response.json()
     return data.get("aiResponse", {}).get("products", [])
