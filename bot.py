@@ -4,7 +4,7 @@ import requests
 from pathlib import Path
 from datetime import datetime, timezone
 
-BOT_TOKEN = os.environ["BOT_TOKEN"]
+BOT_TOKEN = os.environ["BOT_TOKEN"].strip()
 HASDATA_API_KEY = os.environ["HASDATA_API_KEY"]
 CHAT_ID = os.environ["CHAT_ID"]
 
