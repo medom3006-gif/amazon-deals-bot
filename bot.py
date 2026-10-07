@@ -191,7 +191,8 @@ def search_noon():
         timeout=180
     )
 
-    response.raise_for_status()
+    print(response.status_code)
+print(response.text)
 
     data = response.json()
     return data.get("aiResponse", {}).get("products", [])
